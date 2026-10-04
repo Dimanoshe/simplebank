@@ -16,6 +16,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'drf_spectacular',
     'users',
+    'bank',
 ]
 
 AUTH_USER_MODEL = 'users.User'

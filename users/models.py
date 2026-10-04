@@ -14,7 +14,7 @@ class UserManager(BaseUserManager):
 
     def get_by_natural_key(self, email):
         # Login works with any letter case
-        return self.get(email__iexact=email)
+        return self.get(email=email.lower())
 
 
 class User(AbstractBaseUser):
