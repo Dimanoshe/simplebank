@@ -11,8 +11,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Run as non-root user
-RUN useradd --no-create-home app
+RUN useradd --create-home app
 USER app
 
 EXPOSE 8000
-CMD ["sh", "-c", "python manage.py migrate --noinput && gunicorn config.wsgi --bind 0.0.0.0:8000 --workers 3"]
+CMD ["sh", "-c", "python manage.py migrate --noinput && python manage.py createcachetable && gunicorn config.wsgi --bind 0.0.0.0:8000 --workers 3"]
