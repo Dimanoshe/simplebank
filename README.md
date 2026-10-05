@@ -60,6 +60,32 @@ curl -s -X POST $API/transfers/ -H "$AUTH" -H "$JSON" -d '{"to_account": "<bob n
 curl -s "$API/account/transactions/?from=2026-01-01&to=2026-12-31" -H "$AUTH"
 ```
 
+## Full manual check
+
+`scripts/check.sh` walks through the whole API against the running app:
+it creates two users, shows their balances, makes transfers and then tries
+everything that must fail (not enough money, unknown account, transfer to yourself,
+wrong amounts, no token and so on).
+
+```bash
+brew install jq          # once, the script reads tokens with jq
+docker compose up -d     # the app must run on localhost:8000
+./scripts/check.sh
+```
+
+Every step prints what we expect and what the server returned, for example:
+
+```
+=== More than the balance: 10000.00  (expected: 400, Insufficient funds)
+{"detail":"Insufficient funds."}
+-> HTTP 400
+```
+
+The script uses new emails on every run, so you can run it again.
+Rate limits still apply: one run makes 4 logins (limit 5/min) and 4 registrations
+(limit 30/hour). So wait a minute between runs, and do not run it more than 7 times an hour.
+If a limit is hit, the script stops with "Setup failed".
+
 ## How money is kept safe
 
 - **Atomic operations.** A transfer runs in one database transaction:
@@ -93,4 +119,5 @@ config/   settings and root URLs
 users/    user model, registration and login
 bank/     models, services (money logic), API views
 tests/    API, fee, atomicity and concurrency tests
+scripts/  check.sh for a manual check of the running API
 ```
