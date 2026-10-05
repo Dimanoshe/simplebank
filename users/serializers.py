@@ -1,5 +1,8 @@
 from django.contrib.auth import password_validation
+from django.db import transaction
 from rest_framework import serializers
+
+from bank.services import open_account
 
 from .models import User
 
@@ -8,6 +11,7 @@ class RegisterSerializer(serializers.Serializer):
     email = serializers.EmailField(max_length=254)
     # Limit length to protect the slow hasher from huge inputs
     password = serializers.CharField(write_only=True, max_length=128, trim_whitespace=False)
+    account_number = serializers.CharField(source='account.number', read_only=True)
 
     def validate_email(self, value):
         value = value.lower()
@@ -19,6 +23,9 @@ class RegisterSerializer(serializers.Serializer):
         password_validation.validate_password(attrs['password'], User(email=attrs['email']))
         return attrs
 
+    @transaction.atomic
     def create(self, validated_data):
-        return User.objects.create_user(**validated_data)
+        user = User.objects.create_user(**validated_data)
+        open_account(user)
+        return user
 
