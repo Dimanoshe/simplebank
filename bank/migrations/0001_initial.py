@@ -42,7 +42,6 @@ class Migration(migrations.Migration):
                 ('type', models.CharField(choices=[('credit', 'Credit'), ('debit', 'Debit')], max_length=6)),
                 ('kind', models.CharField(choices=[('deposit', 'Deposit'), ('transfer', 'Transfer'), ('fee', 'Fee')], max_length=8)),
                 ('amount', models.DecimalField(decimal_places=2, max_digits=14)),
-                ('balance_after', models.DecimalField(decimal_places=2, max_digits=14)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('account', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='transactions', to='bank.account')),
                 ('counterparty', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='+', to='bank.account')),

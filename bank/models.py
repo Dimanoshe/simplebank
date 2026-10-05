@@ -74,7 +74,6 @@ class Transaction(models.Model):
     type = models.CharField(max_length=6, choices=Type)
     kind = models.CharField(max_length=8, choices=Kind)
     amount = models.DecimalField(**MONEY)
-    balance_after = models.DecimalField(**MONEY)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

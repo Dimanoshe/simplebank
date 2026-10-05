@@ -80,12 +80,6 @@ def _move(source, target, amount, kind, transfer=None):
 
     entry = {'kind': kind, 'amount': amount, 'transfer': transfer}
     Transaction.objects.bulk_create([
-        Transaction(
-            account=source, counterparty=target, type=Transaction.Type.DEBIT,
-            balance_after=source.balance, **entry,
-        ),
-        Transaction(
-            account=target, counterparty=source, type=Transaction.Type.CREDIT,
-            balance_after=target.balance, **entry,
-        ),
+        Transaction(account=source, counterparty=target, type=Transaction.Type.DEBIT, **entry),
+        Transaction(account=target, counterparty=source, type=Transaction.Type.CREDIT, **entry),
     ])
