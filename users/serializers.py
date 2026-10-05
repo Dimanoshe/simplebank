@@ -28,4 +28,3 @@ class RegisterSerializer(serializers.Serializer):
         user = User.objects.create_user(**validated_data)
         open_account(user)
         return user
-

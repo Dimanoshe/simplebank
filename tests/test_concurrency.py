@@ -38,8 +38,10 @@ def run_in_parallel(jobs):
 
 def test_parallel_transfers_do_not_overdraw(alice, bob):
     # Each transfer costs 1000 + 25 fee, so 10000 is enough for only 9 of them
-    job = lambda: transfer(alice, bob.account.number, Decimal('1000'))
-    results = run_in_parallel([job] * 20)
+    def send():
+        transfer(alice, bob.account.number, Decimal('1000'))
+
+    results = run_in_parallel([send] * 20)
 
     assert results.count('ok') == 9
     assert results.count('Insufficient funds.') == 11
@@ -49,8 +51,12 @@ def test_parallel_transfers_do_not_overdraw(alice, bob):
 
 
 def test_opposite_transfers_do_not_deadlock(alice, bob):
-    to_bob = lambda: transfer(alice, bob.account.number, Decimal('100'))
-    to_alice = lambda: transfer(bob, alice.account.number, Decimal('100'))
+    def to_bob():
+        transfer(alice, bob.account.number, Decimal('100'))
+
+    def to_alice():
+        transfer(bob, alice.account.number, Decimal('100'))
+
     results = run_in_parallel([to_bob, to_alice] * 10)
 
     assert results == ['ok'] * 20

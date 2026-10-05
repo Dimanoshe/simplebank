@@ -47,4 +47,4 @@ class TransferView(generics.CreateAPIView):
                 self.request.user, data['receiver']['number'], data['amount']
             )
         except TransferError as error:
-            raise ValidationError({'detail': str(error)})
+            raise ValidationError({'detail': str(error)}) from None

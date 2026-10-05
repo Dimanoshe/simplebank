@@ -84,9 +84,7 @@ def test_transfer_to_own_account(alice_api, alice):
     assert response.data['detail'] == 'Cannot transfer to your own account.'
 
 
-@pytest.mark.parametrize(
-    'amount', [0.1, '0', '-5', '1.001', 'NaN', 'abc', '1000000.01', None]
-)
+@pytest.mark.parametrize('amount', [0.1, '0', '-5', '1.001', 'NaN', 'abc', '1000000.01', None])
 def test_transfer_invalid_amount(alice_api, alice, bob, amount):
     response = alice_api.post(URL, {'to_account': bob.account.number, 'amount': amount})
 
@@ -108,4 +106,3 @@ def test_integer_amount_is_accepted(alice_api, bob):
 
     assert response.status_code == 201
     assert response.data['amount'] == '10.00'
-

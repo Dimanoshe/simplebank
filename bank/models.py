@@ -36,9 +36,7 @@ class Account(models.Model):
 
 
 class Transfer(models.Model):
-    sender = models.ForeignKey(
-        Account, on_delete=models.PROTECT, related_name='sent_transfers'
-    )
+    sender = models.ForeignKey(Account, on_delete=models.PROTECT, related_name='sent_transfers')
     receiver = models.ForeignKey(
         Account, on_delete=models.PROTECT, related_name='received_transfers'
     )

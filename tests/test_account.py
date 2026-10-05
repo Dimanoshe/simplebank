@@ -34,8 +34,11 @@ def dated_history(alice):
     deposit = alice.account.transactions.get()
     for day in (1, 2, 3):
         entry = Transaction.objects.create(
-            account=alice.account, counterparty=deposit.counterparty,
-            type='credit', kind='deposit', amount=day,
+            account=alice.account,
+            counterparty=deposit.counterparty,
+            type='credit',
+            kind='deposit',
+            amount=day,
         )
         entry.created_at = datetime(2026, 3, day, 23, 59, tzinfo=timezone.utc)
         entry.save(update_fields=['created_at'])

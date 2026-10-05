@@ -18,7 +18,7 @@ class RegisterView(generics.CreateAPIView):
         try:
             serializer.save()
         except IntegrityError:
-            raise ValidationError({'email': ['A user with this email already exists.']})
+            raise ValidationError({'email': ['A user with this email already exists.']}) from None
 
 
 class LoginView(TokenObtainPairView):
