@@ -26,20 +26,22 @@ class AccountSerializer(serializers.ModelSerializer):
 
 class TransactionSerializer(serializers.ModelSerializer):
     counterparty = serializers.CharField(source='counterparty.number')
+    timestamp = serializers.DateTimeField(source='created_at')
 
     class Meta:
         model = Transaction
-        fields = ['id', 'amount', 'type', 'kind', 'counterparty', 'created_at']
+        fields = ['id', 'amount', 'type', 'kind', 'counterparty', 'timestamp']
 
 
 class TransferSerializer(serializers.ModelSerializer):
     to_account = serializers.RegexField(r'^[0-9]{10}$', source='receiver.number')
     amount = MoneyField(min_value=Decimal('0.01'), max_value=Decimal('1000000.00'))
+    timestamp = serializers.DateTimeField(source='created_at', read_only=True)
 
     class Meta:
         model = Transfer
-        fields = ['id', 'to_account', 'amount', 'fee', 'created_at']
-        read_only_fields = ['id', 'fee', 'created_at']
+        fields = ['id', 'to_account', 'amount', 'fee', 'timestamp']
+        read_only_fields = ['id', 'fee']
 
 
 class DateRangeSerializer(serializers.Serializer):
