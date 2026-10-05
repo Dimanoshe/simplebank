@@ -1,33 +1,46 @@
+x-app: &app
+  build:
+    context: .
+    target: prod
+  env_file: .env
+  environment:
+    POSTGRES_HOST: db
+  depends_on:
+    db:
+      condition: service_healthy
+
 services:
   db:
     image: postgres:18-alpine
-    environment:
-      POSTGRES_DB: simplebank
-      POSTGRES_USER: simplebank
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-simplebank}
+    env_file: .env
     volumes:
       - pgdata:/var/lib/postgresql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U simplebank -d simplebank"]
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 2s
       timeout: 3s
       retries: 15
 
+  # Runs once before the web server starts
+  migrate:
+    <<: *app
+    command: sh -c "python manage.py migrate --noinput && python manage.py createcachetable"
+
   web:
-    build: .
-    environment:
-      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-dev-only-insecure-key-change-me}
-      DJANGO_DEBUG: ${DJANGO_DEBUG:-0}
-      DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS:-localhost,127.0.0.1}
-      POSTGRES_HOST: db
-      POSTGRES_DB: simplebank
-      POSTGRES_USER: simplebank
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-simplebank}
+    <<: *app
     ports:
       - "127.0.0.1:8000:8000"
     depends_on:
-      db:
-        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+
+  tests:
+    <<: *app
+    build:
+      context: .
+      target: dev
+    command: pytest
+    profiles: [test]
 
 volumes:
   pgdata:

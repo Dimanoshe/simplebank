@@ -43,6 +43,8 @@ DATABASES = {
         'NAME': os.environ.get('POSTGRES_DB', 'simplebank'),
         'USER': os.environ.get('POSTGRES_USER', 'simplebank'),
         'PASSWORD': os.environ.get('POSTGRES_PASSWORD', ''),
+        # Reuse connections between requests
+        'CONN_MAX_AGE': 60,
     }
 }
 
